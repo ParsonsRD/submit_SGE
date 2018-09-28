@@ -13,7 +13,7 @@ import subprocess
 class SubmitSGE:
 
     def __init__(self, queue_name="", extra_options="", maximum_jobs=100, queue_update=60,
-                 verbose=False):
+                 verbose=True):
         """
         Class for submitting large number of jobs to the sun grid engine
 
@@ -43,14 +43,17 @@ class SubmitSGE:
         """
         username = getpass.getuser()
 
+        # All we want to do here is call qstat and count the remaining lines
         stat = "qstat -u " + username
         if self.queue_name is not "":
             stat += "-q " + self.queue_name
 
+        # Call qstat command
         f = os.popen(stat)
 
         job_number = len(f.readlines())
 
+        # If not empty remove the first 2 lines of table
         if job_number > 0:
             job_number -= 2
         return job_number
@@ -65,12 +68,15 @@ class SubmitSGE:
             Number of jobs containing fragment
         """
         username = getpass.getuser()
+
+        # As before call qstat and count lines
         stat = "qstat -u " + username
         if self.queue_name is not "":
             stat += "-q " + self.queue_name
 
         f = os.popen(stat)
 
+        # Search through lines for our name fragment
         job_number = 0
         for i in f.readlines():
             if i.find(name_fragment) > -1:
@@ -91,17 +97,25 @@ class SubmitSGE:
             Name of job
         :return: None
         """
+        # Create shell script to submit to SGE
         filename = "./submit_" + job_name + ".sh"
 
+        # First copy our useful environment variables
         libpath = os.environ.get("LD_LIBRARY_PATH")
         path = os.environ.get("PATH")
         pypath = os.environ.get("PYTHONPATH")
+        # Get conda evironment if we have one
+        conda_environment = os.environ.get("CONDA_PREFIX")
 
         f = open(filename, 'w')
         f.write("#/bin/sh \n \n")
         f.write("export LD_LIBRARY_PATH=" + libpath + " \n")
         f.write("export PATH=" + path + " \n")
         f.write("export PYTHONPATH=" + pypath + " \n")
+        # Load conda if we want to
+        if conda_environment is not "":
+            environment_name = conda_environment.split("/")[-1]
+            f.write("source activate" + environment_name + " \n")
 
         f.write('echo -------------------------------------\n')
         f.write('echo "USER    : $USER" \n')
@@ -115,8 +129,8 @@ class SubmitSGE:
 
         f.close()
 
+        # Create qsub call and use it
         call_command = ["qsub", self.extra_options, "-notify", "-N", job_name, filename]
-
         subprocess.call(call_command)
 
         time.sleep(1)
@@ -148,4 +162,23 @@ class SubmitSGE:
                 self.submit_job(command, job_name)
                 break
             else:
+                time.sleep(self.queue_update)
+
+    def submit_job_list(self, command_list, job_name, wait_for_completion=True):
+        """
+        Submit a list of commands to the cluster and wait for their completion if needed
+        
+        :param command_list: list
+            List of commands to submit
+        :param job_name: str
+            Name of job
+        :param wait_for_completion: bool
+            Should we wait for job completion
+        :return:
+        """
+        for command in command_list:
+            self.submit_job_when_ready(command, job_name)
+
+        if wait_for_completion:
+            while self.get_jobs_in_queue_name(job_name) > 0:
                 time.sleep(self.queue_update)
