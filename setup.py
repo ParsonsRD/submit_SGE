@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name='submit_SGE',
+    name='pip install -e .submit_SGE',
     version='0.1',
     packages=['submit_SGE'],
     url='',
