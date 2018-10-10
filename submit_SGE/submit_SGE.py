@@ -73,7 +73,7 @@ class SubmitSGE:
         # As before call qstat and count lines
         # This code contains a horrible regex, but essentiall allows me to get the full
         # job name from qstat
-        stat = "qstat -u " + username + " -xml"
+        stat = "qstat -u " + username + " -xml "
         if self.queue_name is not "":
             stat += "-q " + self.queue_name
 
