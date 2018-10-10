@@ -1,3 +1,3 @@
-from . import submit_SGE
+from .submit_SGE import SubmitSGE
 
 name = "submit_SGE"
