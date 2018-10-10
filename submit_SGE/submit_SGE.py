@@ -102,6 +102,7 @@ class SubmitSGE:
         """
         # Create shell script to submit to SGE
         filename = "./submit_" + job_name + ".sh"
+        print(filename)
 
         # First copy our useful environment variables
         libpath = os.environ.get("LD_LIBRARY_PATH")
@@ -133,7 +134,12 @@ class SubmitSGE:
         f.close()
 
         # Create qsub call and use it
-        call_command = ["qsub", self.extra_options, "-notify", "-N", job_name, filename]
+        if self.extra_options is not "":
+            call_command = ["qsub", self.extra_options, "-notify", "-N", job_name,
+                            filename]
+        else:
+            call_command = ["qsub", "-notify", "-N", job_name, filename]
+
         subprocess.call(call_command)
 
         time.sleep(1)
