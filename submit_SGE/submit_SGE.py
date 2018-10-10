@@ -133,12 +133,18 @@ class SubmitSGE:
 
         f.close()
 
+        call_command = ["qsub", "-notify"]
         # Create qsub call and use it
         if self.extra_options is not "":
-            call_command = ["qsub", self.extra_options, "-notify", "-N", job_name,
-                            filename]
-        else:
-            call_command = ["qsub", "-notify", "-N", job_name, filename]
+            call_command.append(self.extra_options)
+        call_command.append("-N")
+        call_command.append(job_name)
+        
+        if self.queue_name is not "":
+            call_command.append("-q")
+            call_command.append(self.queue_name)
+
+        call_command.append(filename)
 
         subprocess.call(call_command)
 
