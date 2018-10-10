@@ -8,6 +8,7 @@ import os
 import getpass
 import time
 import subprocess
+__all__ = ['SubmitSGE']
 
 
 class SubmitSGE:
