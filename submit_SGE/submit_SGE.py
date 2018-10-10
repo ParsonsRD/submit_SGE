@@ -119,7 +119,7 @@ class SubmitSGE:
         # Load conda if we want to
         if conda_environment is not "":
             environment_name = conda_environment.split("/")[-1]
-            f.write("source activate" + environment_name + " \n")
+            f.write("source activate " + environment_name + " \n")
 
         f.write('echo -------------------------------------\n')
         f.write('echo "USER    : $USER" \n')
@@ -139,7 +139,7 @@ class SubmitSGE:
             call_command.append(self.extra_options)
         call_command.append("-N")
         call_command.append(job_name)
-        
+
         if self.queue_name is not "":
             call_command.append("-q")
             call_command.append(self.queue_name)
