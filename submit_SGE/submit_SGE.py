@@ -136,7 +136,11 @@ class SubmitSGE:
         call_command = ["qsub", "-notify"]
         # Create qsub call and use it
         if self.extra_options is not "":
-            call_command.append(self.extra_options)
+            option_strings = self.extra_options.split()
+
+            for opt in option_strings:
+                call_command.append(opt)
+                
         call_command.append("-N")
         call_command.append(job_name)
 
