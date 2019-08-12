@@ -113,9 +113,13 @@ class SubmitSGE:
 
         f = open(filename, 'w')
         f.write("#/bin/sh \n \n")
-        f.write("export LD_LIBRARY_PATH=" + libpath + " \n")
-        f.write("export PATH=" + path + " \n")
-        f.write("export PYTHONPATH=" + pypath + " \n")
+        if libpath:
+            f.write("export LD_LIBRARY_PATH=" + libpath + " \n")
+        if path:
+            f.write("export PATH=" + path + " \n")
+        if pypath:
+            f.write("export PYTHONPATH=" + pypath + " \n")
+            
         # Load conda if we want to
         if conda_environment is not "":
             environment_name = conda_environment.split("/")[-1]
