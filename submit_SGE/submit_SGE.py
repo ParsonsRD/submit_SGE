@@ -108,6 +108,8 @@ class SubmitSGE:
         libpath = os.environ.get("LD_LIBRARY_PATH")
         path = os.environ.get("PATH")
         pypath = os.environ.get("PYTHONPATH")
+        pwd = os.getcwd()
+
         # Get conda evironment if we have one
         conda_environment = os.environ.get("CONDA_PREFIX")
 
@@ -128,6 +130,8 @@ class SubmitSGE:
 
             f.write("source activate " + environment_name + " \n")
             f.write("conda activate " + environment_name + " \n")
+
+        f.write("cd " + pwd + " \n")
 
         f.write('echo -------------------------------------\n')
         f.write('echo "USER    : $USER" \n')
