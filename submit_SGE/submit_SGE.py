@@ -119,11 +119,15 @@ class SubmitSGE:
             f.write("export PATH=" + path + " \n")
         if pypath:
             f.write("export PYTHONPATH=" + pypath + " \n")
-            
+
         # Load conda if we want to
         if conda_environment is not "":
             environment_name = conda_environment.split("/")[-1]
+            f.write('echo Need to try both source activate and conda activate \n')
+            f.write('echo (dont worry if you see command not found below)\n')
+
             f.write("source activate " + environment_name + " \n")
+            f.write("conda activate " + environment_name + " \n")
 
         f.write('echo -------------------------------------\n')
         f.write('echo "USER    : $USER" \n')
